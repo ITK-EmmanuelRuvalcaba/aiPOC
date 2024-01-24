@@ -1,0 +1,265 @@
+﻿@page "/new"
+@rendermode InteractiveWebAssembly
+
+<div class="row mt-3">
+	<div class="col-12 text-center">
+		<h3>Process Serving</h3>
+	</div>
+</div>
+
+<EditForm Model="@Request" OnValidSubmit="@Submit" FormName="ProcessServingRequestForm" class="row">
+	<div class="offset-6 col-6">
+		<div class="card shadow mb-3">
+			<h5 class="m-3"><strong>Case Information</strong></h5>
+			<div class="card-body">
+				<div class="mb-3">
+					<label for="matter" class="form-label">Matter</label>
+					<InputText @bind-Value="@Request.Matter" class="form-control form-control-sm" id="matter" />
+				</div>
+				<div class="mb-3">
+					<label for="state" class="form-label">State</label>
+					<InputSelect @bind-Value="@Request.State" class="form-select form-select-sm" id="state">
+						<option selected value="">
+							Select State...
+						</option>
+
+						@foreach (var state in States)
+						{
+							<option id="select-@state.Value" value="@state.Key" checked="@(Request.State == state.Key)">@state.Value</option>
+						}
+					</InputSelect>
+				</div>
+				<div class="mb-3">
+					<label for="case-number" class="form-label">Case Number</label>
+					<InputText @bind-Value="@Request.CaseNumber" class="form-control form-control-sm" id="case-number" />
+				</div>
+				<div class="mb-3">
+					<label for="court" class="form-label">Court</label>
+					<InputText @bind-Value="@Request.Court" class="form-control form-control-sm" id="court" />
+				</div>
+				<div class="mb-3">
+					<label for="plaintiff" class="form-label">Plaintiff/Petitioner</label>
+					<InputText @bind-Value="@Request.Plaintiff" class="form-control form-control-sm" id="plaintiff" />
+				</div>
+				<div class="mb-3">
+					<label for="defendant" class="form-label">Defendant/Respondent</label>
+					<InputText @bind-Value="@Request.Defendant" class="form-control form-control-sm" id="defendant" />
+				</div>
+			</div>
+		</div>
+		<div class="card shadow mb-3">
+			<h5 class="m-3"><strong>Recipients</strong></h5>
+			<div class="card-body">
+				@foreach (var recipient in Request.Recipients)
+				{
+					<div class="card shadow mb-3">
+						<div class="card-body">
+							<details open="@(Request.Recipients.IndexOf(recipient) == 0)">
+								<summary><strong>Recipient #@(Request.Recipients.IndexOf(recipient) + 1)</strong> <span class="text-muted">@recipient.Name</span></summary>
+								<div class="mb-3">
+									<label class="form-label">Party to Serve</label>
+									<InputText @bind-Value="@recipient.Name" class="form-control form-control-sm" />
+								</div>
+
+								<details open class="mb-3">
+									<summary>Physical Details</summary>
+									<div class="row">
+										<div class="col-3">
+											<label class="form-label">Age</label>
+											<InputNumber @bind-Value="@recipient.PhysicalDetails.Age" class="form-control form-control-sm" />
+										</div>
+										<div class="col-3">
+											<label class="form-label">Gender</label>
+											<InputSelect @bind-Value="@recipient.PhysicalDetails.Gender" class="form-select form-select-sm">
+												<option selected value="">-</option>
+												<option value="Male">Male</option>
+												<option value="Female">Female</option>
+												<option value="Other">Other</option>
+											</InputSelect>
+										</div>
+										<div class="col-3">
+											<label class="form-label">Ethnicity</label>
+											<InputSelect @bind-Value="@recipient.PhysicalDetails.Ethnicity" class="form-select form-select-sm">
+												<option value="">-</option>
+												<option value="African American">African American</option>
+												<option value="Asian American">Asian American</option>
+												<option value="Caucasian">Caucasian</option>
+												<option value="Hispanic">Hispanic</option>
+												<option value="Latino">Latino</option>
+												<option value="Middle Eastern">Middle Eastern</option>
+												<option value="Native American">Native American</option>
+												<option value="Native Hawaiian">Native Hawaiian</option>
+												<option value="Other">Other</option>
+											</InputSelect>
+										</div>
+										<div class="col-3">
+											<label class="form-label">Relationship</label>
+											<InputSelect @bind-Value="@recipient.PhysicalDetails.Relationship" class="form-select form-select-sm">
+												<option value="">-</option>
+												<option value="Aunt">Aunt</option>
+												<option value="Boyfriend">Boyfriend</option>
+												<option value="Brother">Brother</option>
+												<option value="Cousin">Cousin</option>
+												<option value="Daughter">Daughter</option>
+												<option value="Father">Father</option>
+												<option value="Girlfriend">Girlfriend</option>
+												<option value="Grandfather">Grandfather</option>
+												<option value="Grandmother">Grandmother</option>
+												<option value="Husband">Husband</option>
+												<option value="Mother">Mother</option>
+												<option value="Partner">Partner</option>
+												<option value="Nephew">Nephew</option>
+												<option value="Niece">Niece</option>
+												<option value="Sister">Sister</option>
+												<option value="Son">Son</option>
+												<option value="Uncle">Uncle</option>
+												<option value="Wife">Wife</option>
+												<option value="Other">Other</option>
+											</InputSelect>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-3">
+											<label class="form-label">Hair</label>
+											<InputSelect @bind-Value="@recipient.PhysicalDetails.Hair" class="form-select form-select-sm">
+												<option value="">-</option>
+												<option value="Bald">Bald</option>
+												<option value="Black">Black</option>
+												<option value="Blond">Blond</option>
+												<option value="Brown">Brown</option>
+												<option value="Gray">Gray</option>
+												<option value="Red">Red</option>
+												<option value="White">White</option>
+												<option value="Other">Other</option>
+											</InputSelect>
+										</div>
+										<div class="col-3">
+											<label class="form-label">Eyes</label>
+											<InputSelect @bind-Value="@recipient.PhysicalDetails.Eyes" class="form-select form-select-sm">
+												<option value="">-</option>
+												<option value="Amber">Amber</option>
+												<option value="Black">Black</option>
+												<option value="Blue">Blue</option>
+												<option value="Brown">Brown</option>
+												<option value="Gray">Gray</option>
+												<option value="Green">Green</option>
+												<option value="Hazel">Hazel</option>
+												<option value="Other">Other</option>
+											</InputSelect>
+										</div>
+										<div class="col-3">
+											<label class="form-label">Weight</label>
+											<InputNumber @bind-Value="@recipient.PhysicalDetails.Weight" class="form-control form-control-sm" />
+										</div>
+										<div class="col-3">
+											<div class="row">
+												<div class="col-6">
+													<label class="form-label">Height</label>
+													<InputSelect @bind-Value="@recipient.PhysicalDetails.HeightFeet" class="form-select form-select-sm">
+														<option selected value="">-</option>
+														<option value="3'">3'</option>
+														<option value="4'">4'</option>
+														<option value="5'">5'</option>
+														<option value="6'">6'</option>
+														<option value="7'">7'</option>
+														<option value="8'">8'</option>
+														<option value="9'">9'</option>
+													</InputSelect>
+												</div>
+												<div class="col-6">
+													<InputSelect @bind-Value="@recipient.PhysicalDetails.HeightInches" class="form-select form-select-sm" style="margin-top: 32px;">
+														<option selected value="">-</option>
+														<option value='1"'>1"</option>
+														<option value='2"'>2"</option>
+														<option value='3"'>3"</option>
+														<option value='4"'>4"</option>
+														<option value='5"'>5"</option>
+														<option value='6"'>6"</option>
+														<option value='7"'>7"</option>
+														<option value='8"'>8"</option>
+														<option value='9"'>9"</option>
+														<option value='10"'>10"</option>
+														<option value='11"'>11"</option>
+													</InputSelect>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-12">
+											<label class="form-label">Other Details</label>
+											<InputTextArea @bind-Value="@recipient.PhysicalDetails.OtherDetails" class="form-control form-control-sm" placeholder="If desired, please enter any additional physical details about the recipient."  />
+										</div>
+									</div>
+								</details>
+
+								<details open class="mb-3">
+									<summary>Primary Address</summary>
+									<div class="row">
+										<div class="col-12">
+											<label class="form-label">Address Type</label>
+											<InputSelect @bind-Value="@recipient.Address.AddressType" class="form-select form-select-sm">
+												<option selected value="">Select and address type</option>
+												<option value="Home">Home</option>
+												<option value="Business">Business</option>
+												<option value="Other">Other</option>
+											</InputSelect>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-6">
+											<label class="form-label">Address 1</label>
+											<InputText @bind-Value="@recipient.Address.Address1" class="form-control form-control-sm" />
+										</div>
+										<div class="col-6">
+											<label class="form-label">Address 2</label>
+											<InputText @bind-Value="@recipient.Address.Address2" class="form-control form-control-sm" />
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-6">
+											<label class="form-label">Address 1</label>
+											<InputText @bind-Value="@recipient.Address.Address1" class="form-control form-control-sm" />
+										</div>
+										<div class="col-6">
+											<label class="form-label">State</label>
+											<InputSelect @bind-Value="@recipient.Address.State" class="form-select form-select-sm">
+												<option selected value="">
+													Select State...
+												</option>
+
+												@foreach (var state in States)
+												{
+													<option id="select-@state.Value" value="@state.Key" checked="@(Request.State == state.Key)">@state.Value</option>
+												}
+											</InputSelect>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-6">
+											<label class="form-label">Postal Code</label>
+											<InputText @bind-Value="@recipient.Address.PostalCode" class="form-control form-control-sm" />
+										</div>
+									</div>
+								</details>
+
+								<details open>
+									<summary>Special Instructions</summary>
+									<div class="row">
+										<div class="col-12">
+											<InputTextArea @bind-Value="@recipient.SpecialInstructions" class="form-control form-control-sm" placeholder="If desired, please enter any additional information for the process server." />
+										</div>
+									</div>
+								</details>
+							</details>
+						</div>
+					</div>
+				}
+				<div class="mt-3 text-end">
+					<div @onclick="AddRecipient" id="add-new-recipient">Add new recipient <i class="bi bi-plus-circle-fill text-info" title="Add new recipient"></i></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</EditForm>

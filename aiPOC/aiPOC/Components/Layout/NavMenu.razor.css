@@ -1,0 +1,12 @@
+nav.navbar {
+    background-color: #167C98 !important;
+    height: 85px;
+}
+
+img {
+    height: 75px;
+}
+
+.nav-link {
+    color: white;
+}

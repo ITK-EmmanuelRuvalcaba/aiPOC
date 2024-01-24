@@ -1,0 +1,27 @@
+﻿@page "/new/upload"
+@rendermode InteractiveWebAssembly
+
+<div class="row mt-3">
+	<div class="offset-4 col-4">
+		<DocumentUpload @rendermode="InteractiveWebAssembly" @bind-DisableDocContinue="DisableDocContinue" />
+	</div>
+</div>
+
+<div class="row">
+	<div class="offset-4 col-4">
+		<PhotoUpload @rendermode="InteractiveWebAssembly" @bind-DisablePhotoContinue="DisablePhotoContinue" />
+	</div>
+</div>
+
+<div class="row mt-3">
+	<div class="text-center">
+		@if (DisableContinue)
+		{
+			<button type="button" class="btn btn-primary" disabled>Continue</button>
+		}
+		else
+		{
+			<a href="/new" class="btn btn-primary">Continue</a>
+		}
+	</div>
+</div>

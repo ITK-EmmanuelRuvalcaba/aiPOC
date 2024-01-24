@@ -1,0 +1,21 @@
+﻿
+<form class="row">
+	<div class="col-10 mt-3">
+		<label for="photo-upload" class="form-label">Upload a photo of the recipient to serve (Optional)</label>
+		<InputFile OnChange="@LoadFileAsync" class="form-control" id="photo-file" disabled="@IsLoading" />
+	</div>
+
+	@if (IsLoading)
+	{
+		<div class="col-2 text-center d-flex align-items-end">
+			<LoadingSpinner Size="lg" />
+		</div>
+	}
+
+	@if (IsComplete)
+	{
+		<div class="col-2 text-center d-flex align-items-end">
+			<i class="bi bi-check-circle-fill text-success"></i>
+		</div>
+	}
+</form>
