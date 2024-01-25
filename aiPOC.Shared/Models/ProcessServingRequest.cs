@@ -25,13 +25,13 @@ public class ProcessServingRecipient
 
 public class PhysicalDetails
 {
-	public int? Age { get; set; }
+	public string Age { get; set; } = string.Empty;
 	public string Gender { get; set; } = string.Empty;
 	public string Ethnicity { get; set; } = string.Empty;
 	public string Relationship { get; set; } = string.Empty;
 	public string Hair { get; set; } = string.Empty;
 	public string Eyes { get; set; } = string.Empty;
-	public int? Weight { get; set; }
+	public string Weight { get; set; } = string.Empty;
 	public int? HeightFeet { get; set; }
 	public int? HeightInches { get; set; }
 	public string OtherDetails { get; set; } = string.Empty;

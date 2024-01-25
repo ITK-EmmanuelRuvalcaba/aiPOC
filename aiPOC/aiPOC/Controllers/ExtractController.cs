@@ -1,8 +1,6 @@
 ﻿using aiPOC.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -41,73 +39,70 @@ public class ExtractController : ControllerBase
 		return Ok();
 	}
 
-	//POST to extract recipient details from a photo using gpt4 vision API
 	[HttpPost("recipient")]
-	public async Task<IActionResult> ExtractRecipientDetails([FromForm] DefaultRequest request)
-	{
-		try
-		{
-			using var httpClient = new HttpClient();
-			//query openai vision api
-			//base64 encode image
-			using var ms = new MemoryStream();
-			await request.File.CopyToAsync(ms);
-			var fileBytes = ms.ToArray();
-			var base64String = Convert.ToBase64String(fileBytes);
+    public async Task<ActionResult<PersonDescription>> ExtractRecipientDetails([FromForm] DefaultRequest request)
+    {
+        try
+        {
+            using var httpClient = new HttpClient();
+            //query openai vision api
+            //base64 encode image
+            using var ms = new MemoryStream();
+            await request.File.CopyToAsync(ms);
+            var fileBytes = ms.ToArray();
+            var base64String = Convert.ToBase64String(fileBytes);
+            
+            //json content
+            //grab api key from configuration
+            var key = _configuration.GetSection("OpenAI").GetSection("ApiKey").Value;
+            if (key == null)
+            {
+                return BadRequest("Could not complete request.");
+            }
 
-			//json content
-			//grab api key from configuration
-			var key = _configuration.GetSection("OpenAI").GetSection("ApiKey").Value;
-			if (key == null)
-			{
-				return BadRequest("Could not complete request.");
-			}
+            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {key}");
+            var response =
+                await httpClient.PostAsync("https://api.openai.com/v1/chat/completions", new StringContent(JsonSerializer.Serialize(new {
+                    model = "gpt-4-vision-preview",
+                    messages = new [] {
+                        new {
+                            role = "user",
+                            content = new dynamic[] {
+                                new {
+                                    type = "text",
+                                    text = "You are a helpful assistant who is good at describing people. If you cannot determine a value, please insert a default value or null. Please describe the person in the supplied photograph, in the following format: { eye_color: string, hair_color: string, gender: string, age: string, ethnicity: string, other: string }. Please render valid json with an opening brace."
+                                },
+                                new {
+                                    type = "image_url",
+                                    image_url = new {
+                                        url = $"data:image/png;base64,{base64String}"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    temperature = 0,
+                    max_tokens = 4096
+                }), Encoding.UTF8, "application/json"));
 
-			httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {key}");
-			var response =
-				await httpClient.PostAsync("https://api.openai.com/v1/chat/completions", new StringContent(JsonSerializer.Serialize(new
-				{
-					model = "gpt-4-vision-preview",
-					messages = new[] {
-						new {
-							role = "user",
-							content = new dynamic[] {
-								new {
-									type = "text",
-									text = "You are a helpful assistant who is good at describing people. Please describe the person in the supplied photograph, in the following format: { eye_color: string, hair_color: string, gender: string, age: string, ethnicity: string, other: string }."
-								},
-								new {
-									type = "image_url",
-									image_url = new {
-										url = $"data:image/png;base64,{base64String}"
-									}
-								}
-							}
-						}
-					},
-					temperature = 0,
-					max_tokens = 4096
-				}), Encoding.UTF8, "application/json"));
+            if (!response.IsSuccessStatusCode)
+            {
+                return BadRequest();
+            }
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var responseBody = await response.Content.ReadFromJsonAsync<Root>();
+                var content = responseBody.Choices[0].Message.Content.Replace("\n", "");
+                var deserialized = JsonSerializer.Deserialize<PersonDescription>(content);
+                return Ok(deserialized);
+            }
+            return BadRequest();
 
-			if (!response.IsSuccessStatusCode)
-			{
-				var content = await response.Content.ReadAsStringAsync();
-				Console.WriteLine($"StatusCode: {response.StatusCode}");
-				Console.WriteLine($"Content: {content}");
-			}
-
-			if (response.IsSuccessStatusCode)
-			{
-				var responseBody = await response.Content.ReadAsStringAsync();
-				return Ok(responseBody);
-			}
-			return BadRequest();
-
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine(ex);
-			return BadRequest();
-		}
-	}
+        } catch (Exception ex) 
+        {
+            Console.WriteLine(ex);
+            return BadRequest();
+        }
+    }
 }

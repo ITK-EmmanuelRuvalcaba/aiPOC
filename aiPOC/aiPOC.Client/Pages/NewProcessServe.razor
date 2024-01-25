@@ -66,91 +66,34 @@
 									<div class="row">
 										<div class="col-3">
 											<label class="form-label">Age</label>
-											<InputNumber @bind-Value="@recipient.PhysicalDetails.Age" class="form-control form-control-sm" />
+											<InputText @bind-Value="@recipient.PhysicalDetails.Age" class="form-control form-control-sm" />
 										</div>
 										<div class="col-3">
 											<label class="form-label">Gender</label>
-											<InputSelect @bind-Value="@recipient.PhysicalDetails.Gender" class="form-select form-select-sm">
-												<option selected value="">-</option>
-												<option value="Male">Male</option>
-												<option value="Female">Female</option>
-												<option value="Other">Other</option>
-											</InputSelect>
+											<InputText @bind-Value="@recipient.PhysicalDetails.Gender" class="form-select form-select-sm"/>
 										</div>
 										<div class="col-3">
 											<label class="form-label">Ethnicity</label>
-											<InputSelect @bind-Value="@recipient.PhysicalDetails.Ethnicity" class="form-select form-select-sm">
-												<option value="">-</option>
-												<option value="African American">African American</option>
-												<option value="Asian American">Asian American</option>
-												<option value="Caucasian">Caucasian</option>
-												<option value="Hispanic">Hispanic</option>
-												<option value="Latino">Latino</option>
-												<option value="Middle Eastern">Middle Eastern</option>
-												<option value="Native American">Native American</option>
-												<option value="Native Hawaiian">Native Hawaiian</option>
-												<option value="Other">Other</option>
-											</InputSelect>
+											<InputText @bind-Value="@recipient.PhysicalDetails.Ethnicity" class="form-select form-select-sm"/>
 										</div>
 										<div class="col-3">
 											<label class="form-label">Relationship</label>
-											<InputSelect @bind-Value="@recipient.PhysicalDetails.Relationship" class="form-select form-select-sm">
-												<option value="">-</option>
-												<option value="Aunt">Aunt</option>
-												<option value="Boyfriend">Boyfriend</option>
-												<option value="Brother">Brother</option>
-												<option value="Cousin">Cousin</option>
-												<option value="Daughter">Daughter</option>
-												<option value="Father">Father</option>
-												<option value="Girlfriend">Girlfriend</option>
-												<option value="Grandfather">Grandfather</option>
-												<option value="Grandmother">Grandmother</option>
-												<option value="Husband">Husband</option>
-												<option value="Mother">Mother</option>
-												<option value="Partner">Partner</option>
-												<option value="Nephew">Nephew</option>
-												<option value="Niece">Niece</option>
-												<option value="Sister">Sister</option>
-												<option value="Son">Son</option>
-												<option value="Uncle">Uncle</option>
-												<option value="Wife">Wife</option>
-												<option value="Other">Other</option>
-											</InputSelect>
+											<InputText @bind-Value="@recipient.PhysicalDetails.Relationship" class="form-select form-select-sm" />
 										</div>
 									</div>
 
 									<div class="row">
 										<div class="col-3">
 											<label class="form-label">Hair</label>
-											<InputSelect @bind-Value="@recipient.PhysicalDetails.Hair" class="form-select form-select-sm">
-												<option value="">-</option>
-												<option value="Bald">Bald</option>
-												<option value="Black">Black</option>
-												<option value="Blond">Blond</option>
-												<option value="Brown">Brown</option>
-												<option value="Gray">Gray</option>
-												<option value="Red">Red</option>
-												<option value="White">White</option>
-												<option value="Other">Other</option>
-											</InputSelect>
+											<InputText @bind-Value="@recipient.PhysicalDetails.Hair" class="form-select form-select-sm" />
 										</div>
 										<div class="col-3">
 											<label class="form-label">Eyes</label>
-											<InputSelect @bind-Value="@recipient.PhysicalDetails.Eyes" class="form-select form-select-sm">
-												<option value="">-</option>
-												<option value="Amber">Amber</option>
-												<option value="Black">Black</option>
-												<option value="Blue">Blue</option>
-												<option value="Brown">Brown</option>
-												<option value="Gray">Gray</option>
-												<option value="Green">Green</option>
-												<option value="Hazel">Hazel</option>
-												<option value="Other">Other</option>
-											</InputSelect>
+											<InputText @bind-Value="@recipient.PhysicalDetails.Eyes" class="form-select form-select-sm" />
 										</div>
 										<div class="col-3">
 											<label class="form-label">Weight</label>
-											<InputNumber @bind-Value="@recipient.PhysicalDetails.Weight" class="form-control form-control-sm" />
+											<InputText @bind-Value="@recipient.PhysicalDetails.Weight" class="form-control form-control-sm" />
 										</div>
 										<div class="col-3">
 											<div class="row">

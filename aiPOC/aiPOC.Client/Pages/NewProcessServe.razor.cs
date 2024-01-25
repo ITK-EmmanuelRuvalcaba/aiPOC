@@ -32,6 +32,8 @@ public partial class NewProcessServe
 	{
 		base.OnAfterRender(firstRender);
 		var extract = await LocalStorage.GetItemAsync<ProofOfServiceExtraction>(JobNumber.ToString());
+
+		var extractPersonDetails = await LocalStorage.GetItemAsync<PersonDescription>(JobNumber.ToString());
 	}
 
 	private void Submit()
