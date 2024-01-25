@@ -31,9 +31,11 @@ public partial class NewProcessServe
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
 		base.OnAfterRender(firstRender);
-		var extract = await LocalStorage.GetItemAsync<ProofOfServiceExtraction>(JobNumber.ToString());
+		var extract = await LocalStorage.GetItemAsync<ProofOfServiceExtraction>(JobNumber.ToString() + "_doc");
+		Request.MapRequestFromExtract(extract);
 
-		var extractPersonDetails = await LocalStorage.GetItemAsync<PersonDescription>(JobNumber.ToString());
+		var extractPersonDetails = await LocalStorage.GetItemAsync<PersonDescription>(JobNumber.ToString() + "_photo");
+		Request.MapRequestFromPhotoExtract(extractPersonDetails);
 	}
 
 	private void Submit()

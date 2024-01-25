@@ -93,7 +93,7 @@ public partial class PhotoUpload
 			var response = await Http.PostAsync("/extract/recipient", content);
 
 			var newUploadResults = await response.Content.ReadFromJsonAsync<PersonDescription>();
-			await LocalStorage.SetItemAsync<PersonDescription>(jobNumber, newUploadResults);
+			await LocalStorage.SetItemAsync<PersonDescription>(jobNumber + "_photo", newUploadResults);
 		}
 
 		IsComplete = true;

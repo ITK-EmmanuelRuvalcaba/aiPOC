@@ -81,7 +81,7 @@ public partial class DocumentUpload
 			var response = await Http.PostAsync("/extract/serve", content);
 
 			var newUploadResults = await response.Content.ReadFromJsonAsync<ProofOfServiceExtraction>();
-			await LocalStorage.SetItemAsync<ProofOfServiceExtraction>(jobNumber, newUploadResults);
+			await LocalStorage.SetItemAsync<ProofOfServiceExtraction>(jobNumber + "_doc", newUploadResults);
 			await FormUrlSet.InvokeAsync(jobNumber);
 		}
 
