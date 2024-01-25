@@ -1,5 +1,6 @@
 
 using aiPOC.Components;
+using Blazored.LocalStorage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,8 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 
 builder.Services.AddHttpClient();
+
+builder.Services.AddBlazoredLocalStorage();
 
 var app = builder.Build();
 

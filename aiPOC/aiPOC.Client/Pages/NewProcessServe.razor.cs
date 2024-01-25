@@ -1,15 +1,17 @@
 ﻿
 using aiPOC.Shared.Models;
+using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components;
 
 namespace aiPOC.Client.Pages;
 
 public partial class NewProcessServe
 {
-	//string[] States = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida",
-	//	"Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland",
-	//	"Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
-	//	"New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina",
-	//	"South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"];
+	[Parameter]
+	public int JobNumber { get; set; }
+
+	[Inject]
+	public ILocalStorageService LocalStorage { get; set; }
 
 	Dictionary<string, string> States = new() {
 		{"AL", "Alabama"}, {"AK", "Alaska"}, {"AZ", "Arizona"}, {"AR", "Arkansas"}, {"CA", "California"},
@@ -25,6 +27,12 @@ public partial class NewProcessServe
 	};
 
 	public ProcessServingRequest Request { get; set; } = new();
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		base.OnAfterRender(firstRender);
+		var extract = await LocalStorage.GetItemAsync<ProofOfServiceExtraction>(JobNumber.ToString());
+	}
 
 	private void Submit()
 	{

@@ -1,5 +1,6 @@
 ﻿using aiPOC.Client.Pages;
 using aiPOC.Shared.Models;
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Logging;
@@ -18,6 +19,8 @@ public partial class DocumentUpload
 
 	[Inject]
 	private HttpClient Http { get; set; }
+	[Inject]
+	public ILocalStorageService LocalStorage { get; set; }
 
 	private readonly List<IBrowserFile> Files = [];
 	private List<UploadResult> UploadResults = [];
@@ -34,6 +37,7 @@ public partial class DocumentUpload
 		Files.Clear();
 
 		long maxFileSize = 1024 * 15000;
+		string jobNumber = string.Empty;
 		var upload = false;
 		using var content = new MultipartFormDataContent();
 
@@ -54,6 +58,8 @@ public partial class DocumentUpload
 					name: "\"file\"",
 					fileName: e.File.Name);
 
+				jobNumber = e.File.Name.Split("_")[0];
+
 				upload = true;
 			}
 			catch (Exception ex)
@@ -72,8 +78,8 @@ public partial class DocumentUpload
 		{
 			var response = await Http.PostAsync("/extract/serve", content);
 
-			var newUploadResults = await response.Content
-				.ReadAsStringAsync();
+			var newUploadResults = await response.Content.ReadFromJsonAsync<ProofOfServiceExtraction>();
+			await LocalStorage.SetItemAsync<ProofOfServiceExtraction>(jobNumber, newUploadResults);
 		}
 
 		IsLoading = false;

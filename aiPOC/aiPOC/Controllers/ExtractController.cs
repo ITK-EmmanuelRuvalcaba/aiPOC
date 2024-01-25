@@ -1,68 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using aiPOC.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using System.Text.Json;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace aiPOC.Controllers;
-
-public class DefaultRequest
-{
-	public IFormFile File { get; set; }
-}
-
-record ExtractionResponse
-{
-	[JsonPropertyName("extraction")]
-	public ExtractionData Extraction { get; set; }
-}
-
-public class ExtractionData
-{
-	[JsonPropertyName("data")]
-	public ProofOfServiceExtraction Data { get; set; }
-}
-
-public class ProofOfServiceExtraction
-{
-	[JsonPropertyName("plaintiffName")]
-	public string PlaintiffName { get; set; }
-	[JsonPropertyName("defendantName")]
-	public string DefendantName { get; set; }
-	[JsonPropertyName("recipientAddress")]
-	public Address RecipientAddress { get; set; }
-	[JsonPropertyName("recipientName")]
-	public string RecipientName { get; set; }
-	[JsonPropertyName("caseNumber")]
-	public string CaseNumber { get; set; }
-	[JsonPropertyName("court")]
-	public Court Court { get; set; }
-}
-
-public class Court
-{
-	[JsonPropertyName("branchName")]
-	public string BranchName { get; set; }
-	[JsonPropertyName("county")]
-	public string County { get; set; }
-	[JsonPropertyName("state")]
-	public string State { get; set; }
-}
-
-public class Address
-{
-	[JsonPropertyName("address1")]
-	public string Address1 { get; set; }
-	[JsonPropertyName("address2")]
-	public string Address2 { get; set; }
-	[JsonPropertyName("city")]
-	public string City { get; set; }
-	[JsonPropertyName("state")]
-	public string State { get; set; }
-	[JsonPropertyName("county")]
-	public string County { get; set; }
-	[JsonPropertyName("postalCode")]
-	public string PostalCode { get; set; }
-}
 
 [ApiController]
 [Route("extract")]
@@ -70,10 +15,16 @@ public class Address
 public class ExtractController : ControllerBase
 {
 	private const string ExtractDocumentServiceUrl = "https://localhost:7159/v2/Documents/ServiceOfProcess";
+	private readonly IConfiguration _configuration;
+
+	public ExtractController(IConfiguration configuration)
+	{
+		_configuration = configuration;
+	}
 
 	//POST extract serve details
 	[HttpPost("serve")]
-	public async Task<IActionResult> ExtractServeDetails([FromForm] IFormFile file)
+	public async Task<ActionResult<ProofOfServiceExtraction>> ExtractServeDetails([FromForm] IFormFile file)
 	{
 		using var httpClient = new HttpClient();
 		var multipartContent = new MultipartFormDataContent
@@ -88,5 +39,75 @@ public class ExtractController : ControllerBase
 		}
 
 		return Ok();
+	}
+
+	//POST to extract recipient details from a photo using gpt4 vision API
+	[HttpPost("recipient")]
+	public async Task<IActionResult> ExtractRecipientDetails([FromForm] DefaultRequest request)
+	{
+		try
+		{
+			using var httpClient = new HttpClient();
+			//query openai vision api
+			//base64 encode image
+			using var ms = new MemoryStream();
+			await request.File.CopyToAsync(ms);
+			var fileBytes = ms.ToArray();
+			var base64String = Convert.ToBase64String(fileBytes);
+
+			//json content
+			//grab api key from configuration
+			var key = _configuration.GetSection("OpenAI").GetSection("ApiKey").Value;
+			if (key == null)
+			{
+				return BadRequest("Could not complete request.");
+			}
+
+			httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {key}");
+			var response =
+				await httpClient.PostAsync("https://api.openai.com/v1/chat/completions", new StringContent(JsonSerializer.Serialize(new
+				{
+					model = "gpt-4-vision-preview",
+					messages = new[] {
+						new {
+							role = "user",
+							content = new dynamic[] {
+								new {
+									type = "text",
+									text = "You are a helpful assistant who is good at describing people. Please describe the person in the supplied photograph, in the following format: { eye_color: string, hair_color: string, gender: string, age: string, ethnicity: string, other: string }."
+								},
+								new {
+									type = "image_url",
+									image_url = new {
+										url = $"data:image/png;base64,{base64String}"
+									}
+								}
+							}
+						}
+					},
+					temperature = 0,
+					max_tokens = 4096
+				}), Encoding.UTF8, "application/json"));
+
+			if (!response.IsSuccessStatusCode)
+			{
+				var content = await response.Content.ReadAsStringAsync();
+				Console.WriteLine($"StatusCode: {response.StatusCode}");
+				Console.WriteLine($"Content: {content}");
+			}
+
+			if (response.IsSuccessStatusCode)
+			{
+				var responseBody = await response.Content.ReadAsStringAsync();
+				return Ok(responseBody);
+			}
+			return BadRequest();
+
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine(ex);
+			return BadRequest();
+		}
 	}
 }
