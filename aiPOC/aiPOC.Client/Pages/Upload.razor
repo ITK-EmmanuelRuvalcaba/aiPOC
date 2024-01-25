@@ -3,7 +3,7 @@
 
 <div class="row mt-3">
 	<div class="offset-4 col-4">
-		<DocumentUpload @rendermode="InteractiveWebAssembly" @bind-DisableDocContinue="DisableDocContinue" />
+		<DocumentUpload @rendermode="InteractiveWebAssembly" @bind-DisableDocContinue="DisableDocContinue" FormUrlSet="HandleFormUrlSet" />
 	</div>
 </div>
 
@@ -21,7 +21,7 @@
 		}
 		else
 		{
-			<a href="/new" class="btn btn-primary">Continue</a>
+			<a href="@FormUrl" class="btn btn-primary">Continue</a>
 		}
 	</div>
 </div>

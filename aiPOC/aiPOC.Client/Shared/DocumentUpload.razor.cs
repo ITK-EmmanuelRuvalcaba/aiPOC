@@ -16,6 +16,8 @@ public partial class DocumentUpload
 	public bool DisableDocContinue { get; set; }
 	[Parameter]
 	public EventCallback<bool> DisableDocContinueChanged { get; set; }
+	[Parameter]
+	public EventCallback<string> FormUrlSet { get; set; }
 
 	[Inject]
 	private HttpClient Http { get; set; }
@@ -80,6 +82,7 @@ public partial class DocumentUpload
 
 			var newUploadResults = await response.Content.ReadFromJsonAsync<ProofOfServiceExtraction>();
 			await LocalStorage.SetItemAsync<ProofOfServiceExtraction>(jobNumber, newUploadResults);
+			await FormUrlSet.InvokeAsync(jobNumber);
 		}
 
 		IsLoading = false;
